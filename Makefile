@@ -15,5 +15,5 @@ clean-proxy:
 clean: clean-proxy  clean-connector
 	rm -rf *.sock
 
-image:
+image: proxy connector
 	docker build -t getfd .
