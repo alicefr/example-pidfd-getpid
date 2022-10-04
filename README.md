@@ -2,6 +2,8 @@
 
 This repository contains an example how to use the syscall [pidfd_getfd](https://man7.org/linux/man-pages/man2/pidfd_getfd.2.html) (available from kernel 5.6) to connect an unprivileged proxy to a privileged daemon running in two separate containers.
 
+![](https://github.com/alicefr/example-pidfd-getpid/blob/main/pic/pidfd_getfd.png)
+
 ## Build
 Compile and build the image `getfd`:
 ```bash
