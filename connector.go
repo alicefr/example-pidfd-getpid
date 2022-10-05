@@ -14,7 +14,7 @@ import (
 var pid = flag.Int("pid", 0, "proxy pid")
 var fd = flag.Int("fd", 0, "proxy fd")
 
-const sock = "/tmp/priv.sock"
+const sock = "/var/run/qemu-pr-helper.sock"
 
 func main() {
 	flag.Parse()
