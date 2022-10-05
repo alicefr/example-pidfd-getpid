@@ -1,37 +1,18 @@
 # Use pidfd_getfd in container
 
-This repository contains an example how to use the syscall [pidfd_getfd](https://man7.org/linux/man-pages/man2/pidfd_getfd.2.html) (available from kernel 5.6) to connect an unprivileged proxy to a privileged daemon running in two separate containers.
-
-![](https://github.com/alicefr/example-pidfd-getpid/blob/main/pic/pidfd_getfd.png)
+This repository contains an example how to use the syscall [pidfd_getfd](https://man7.org/linux/man-pages/man2/pidfd_getfd.2.html) (available from kernel 5.6) to connect qemu running in an unprivileged pod to the pr-helper running in a privileged container.
 
 ## Build
 Compile and build the image `getfd`:
 ```bash
-make image
+make images
 ```
-The image getfd contains the `proxy` and `connector` binary. The proxy is the process that will be connected to the privileged daemon (in the example socat). The connector is the program that connects the proxy to the privileged daemon.
-
+## Example
+Run the containers and connect the proxy to the pr-helper:
 ```bash
-docker run --name unprivileged -td getfd /usr/bin/proxy
-pid=$(docker inspect --format "{{.State.Pid}}" unprivileged)
-docker run -ti -d --name privileged \
-  --pid host \
-  --cap-add SYS_PTRACE \
-  getfd \
-  socat UNIX-LISTEN:/tmp/priv.sock -
-docker exec -ti privileged connector -pid=$pid -fd=3
-Succesfully connected proxy to pr-helper
+./run-containers
 ```
-Test the connection:
-From the unprivileged container
-```bash
-docker exec -ti unprivileged nc -Uv proxy.sock
-Ncat: Version 7.93 ( https://nmap.org/ncat )
-Ncat: Connected to proxy.sock.
-test the connection
+Test qemu:
 ```
-Checking the log of the privileged container:
-```bash
-$ docker logs privileged
-test the connection
+docker exec -ti qemu /start-qemu.sh
 ```
