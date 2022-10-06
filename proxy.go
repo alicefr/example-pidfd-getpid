@@ -17,17 +17,18 @@ func fromClientToDaemon(ctx context.Context, conn net.Conn, fd int) {
 		select {
 		case <-ctx.Done():
 			break
-		default: // Read from the client
+		default:
+			// Read from the client
 			reply := make([]byte, 1024)
-			_, err := conn.Read(reply)
+			n, err := conn.Read(reply)
 			if err != nil {
-				log.Fatal("reading from client: %v:", err)
+				log.Fatalf("reading from client: %v, read bytes: %d", err, n)
 			}
 			log.Info("got from client:", string(reply))
 			// Write to the privileged daemon
 			_, err = syscall.Write(fd, reply)
 			if err != nil {
-				log.Fatal("failed writing privileged daemon: %v:", err)
+				log.Fatalf("failed writing privileged daemon: %v:", err)
 			}
 		}
 	}
@@ -41,15 +42,15 @@ func fromDaemonToClient(ctx context.Context, conn net.Conn, fd int) {
 		default:
 			// Read from the privileged daemon
 			reply := make([]byte, 1024)
-			_, err := syscall.Read(fd, reply)
+			n, err := syscall.Read(fd, reply)
 			if err != nil {
-				log.Fatal("failed reading from the daemon: %v", err)
+				log.Fatalf("failed reading from the daemon: %v, read bytes: %d", err, n)
 			}
 			log.Info("got from the daemon:", string(reply))
 			// Write to the client
 			_, err = conn.Write(reply)
 			if err != nil {
-				log.Fatal("failed writing to client: %v:", err)
+				log.Fatalf("failed writing to client: %v:", err)
 			}
 		}
 	}
