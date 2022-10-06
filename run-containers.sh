@@ -2,6 +2,9 @@
 
 set -x
 
+docker rm -f pr-helper
+docker rm -f qemu
+
 docker run -ti -d --name pr-helper \
   --pid host \
   --privileged \
