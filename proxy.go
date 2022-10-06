@@ -12,21 +12,22 @@ import (
 
 const socketAddr = "proxy.sock"
 
-func fromClientToDaemon(ctx context.Context, conn net.Conn, fd int) {
+func fromClientToDaemon(ctx context.Context, conn *net.UnixConn, fd int) {
 	for {
 		select {
 		case <-ctx.Done():
 			break
 		default:
+			msg, oob := make([]byte, 2), make([]byte, 128)
 			// Read from the client
-			reply := make([]byte, 1024)
-			n, err := conn.Read(reply)
+			_, _, _, _, err := conn.ReadMsgUnix(msg, oob)
 			if err != nil {
-				log.Fatalf("reading from client: %v, read bytes: %d", err, n)
+				log.Fatalf("reading from client: %v", err)
 			}
-			log.Info("got from client:", string(reply))
+			log.Infof("got from client msg:%s oob:%s", string(msg), string(oob))
+			rsa := &syscall.SockaddrUnix{Name: "/var/run/qemu-pr-helper.sock"}
 			// Write to the privileged daemon
-			_, err = syscall.Write(fd, reply)
+			err = syscall.Sendmsg(fd, msg, oob, rsa, 0)
 			if err != nil {
 				log.Fatalf("failed writing privileged daemon: %v:", err)
 			}
@@ -34,7 +35,7 @@ func fromClientToDaemon(ctx context.Context, conn net.Conn, fd int) {
 	}
 }
 
-func fromDaemonToClient(ctx context.Context, conn net.Conn, fd int) {
+func fromDaemonToClient(ctx context.Context, conn *net.UnixConn, fd int) {
 	for {
 		select {
 		case <-ctx.Done():
@@ -64,24 +65,28 @@ func main() {
 	}
 	log.Infof("Pid=%d FD=%d", os.Getpid(), fd)
 	ctx, cancel := context.WithCancel(context.Background())
-	if err := os.RemoveAll(socketAddr); err != nil {
-		log.Fatal(err)
-	}
 	defer cancel()
 
-	l, err := net.Listen("unix", socketAddr)
+	syscall.Unlink(socketAddr)
+	addr, err := net.ResolveUnixAddr("unix", socketAddr)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	l, err := net.ListenUnix("unix", addr)
 	if err != nil {
 		log.Fatal("listen error:", err)
 	}
 	defer l.Close()
-	defer os.Remove(socketAddr)
+	defer syscall.Unlink(socketAddr)
 
-	conn, err := l.Accept()
+	conn, err := l.AcceptUnix()
 	if err != nil {
 		log.Fatal("accept error:", err)
 	}
 	defer conn.Close()
 	log.Info("Accepted connection")
+
 	go fromClientToDaemon(ctx, conn, fd)
 	go fromDaemonToClient(ctx, conn, fd)
 
