@@ -1,7 +1,7 @@
 FROM disk as builder
 FROM fedora:36
 
-RUN dnf install -y qemu-system-x86-core && dnf clean all
+RUN dnf install -y qemu-system-x86-core strace && dnf clean all
 
 COPY --from=builder /disk/disk.img /disk/disk.img
 COPY proxy /usr/bin/proxy
