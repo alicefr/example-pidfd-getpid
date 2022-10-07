@@ -18,16 +18,15 @@ func fromClientToDaemon(ctx context.Context, conn *net.UnixConn, fd int) {
 		case <-ctx.Done():
 			break
 		default:
-			msg, oob := make([]byte, 2), make([]byte, 128)
+			msg, oob := make([]byte, 1024), make([]byte, 128)
 			// Read from the client
-			_, _, _, _, err := conn.ReadMsgUnix(msg, oob)
+			n, oobn, _, _, err := conn.ReadMsgUnix(msg, oob)
 			if err != nil {
 				log.Fatalf("reading from client: %v", err)
 			}
 			log.Infof("got from client msg:%s oob:%s", string(msg), string(oob))
-			rsa := &syscall.SockaddrUnix{Name: "/var/run/qemu-pr-helper.sock"}
 			// Write to the privileged daemon
-			err = syscall.Sendmsg(fd, msg, oob, rsa, 0)
+			err = syscall.Sendmsg(fd, msg[:n], oob[:oobn], nil, 0)
 			if err != nil {
 				log.Fatalf("failed writing privileged daemon: %v:", err)
 			}
