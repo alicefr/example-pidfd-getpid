@@ -8,7 +8,7 @@ RUN dnf install -y libguestfs guestfs-tools curl
 # Cache image download for the next steps
 RUN curl -L -o /disk.img ${IMAGE}
 
-#RUN virt-customize -a /disk.img --install targetcli,sg3_utils
+RUN virt-customize -a /disk.img --install sg3_utils
 
 RUN virt-customize -a /disk.img \
       --root-password password:test \
