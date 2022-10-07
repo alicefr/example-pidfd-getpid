@@ -24,7 +24,6 @@ func fromClientToDaemon(ctx context.Context, conn *net.UnixConn, fd int) {
 			if err != nil {
 				log.Fatalf("reading from client: %v", err)
 			}
-			log.Infof("got from client msg:%s oob:%s", string(msg), string(oob))
 			// Write to the privileged daemon
 			err = syscall.Sendmsg(fd, msg[:n], oob[:oobn], nil, 0)
 			if err != nil {
@@ -46,7 +45,6 @@ func fromDaemonToClient(ctx context.Context, conn *net.UnixConn, fd int) {
 			if err != nil {
 				log.Fatalf("failed reading from the daemon: %v, read bytes: %d", err, n)
 			}
-			log.Info("got from the daemon:", string(reply))
 			// Write to the client
 			_, err = conn.Write(reply)
 			if err != nil {
