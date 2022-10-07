@@ -17,7 +17,7 @@ Compile and build the images `disk`, `qemu` and `pr-helper`:
 make images
 ```
 ## Example
-The script `run-containers` initially launches the proxy in the `qemu` container and the pr-helper in the `pr-helper` container. Then it uses the connector available in the `pr-helper` container to connect the proxy to the pr-helper. Finally, it boot a VM using QEMU configured to use the proxy and the persistent reservation. The disk image available in the `qemu` container already has the `sg3_utils` installed to perform the scsi persistent reservation as described in the [gist](https://gist.github.com/alicefr/c2e4221d7c8834a2b8746d510692d86c).
+The script `run-containers` initially launches the proxy in the `qemu` container and the pr-helper in the `pr-helper` container. Then, it uses the connector available in the `pr-helper` container to connect the proxy to the pr-helper. Finally, it boots a VM using QEMU configured to use the proxy and the persistent reservation. The disk image available in the `qemu` container already has the `sg3_utils` installed to perform the scsi persistent reservation as described in the [gist](https://gist.github.com/alicefr/c2e4221d7c8834a2b8746d510692d86c).
 
 Run the containers and connect the proxy to the pr-helper:
 ```bash
