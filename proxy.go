@@ -46,7 +46,7 @@ func fromDaemonToClient(ctx context.Context, conn *net.UnixConn, fd int) {
 				log.Fatalf("failed reading from the daemon: %v, read bytes: %d", err, n)
 			}
 			// Write to the client
-			_, err = conn.Write(reply)
+			_, err = conn.Write(reply[:n])
 			if err != nil {
 				log.Fatalf("failed writing to client: %v:", err)
 			}
