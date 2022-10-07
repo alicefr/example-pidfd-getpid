@@ -3,6 +3,8 @@
 set -x 
 
 qemu-system-x86_64 \
+	-cpu host \
+	-enable-kvm \
 	-display none \
 	-serial stdio \
 	-nodefaults \
