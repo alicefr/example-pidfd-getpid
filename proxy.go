@@ -60,6 +60,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer syscall.Close(fd)
+
 	log.Infof("Pid=%d FD=%d", os.Getpid(), fd)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
