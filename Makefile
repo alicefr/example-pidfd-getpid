@@ -1,18 +1,6 @@
-all: clean proxy connector
+all: images
 
-connector: clean-connector
-	go build -o connector connector.go
-
-proxy: clean-proxy
-	go build -o proxy proxy.go
-
-clean-connector:
-	rm -f connector
-
-clean: clean-proxy  clean-connector
-	rm -rf *.sock
-
-image-pr-helper: connector
+image-pr-helper: image-pflaume
 	docker build -t pr-helper -f dockerfiles/pr-helper/Dockerfile .
 
 image-qemu: image-pflaume image-disk
