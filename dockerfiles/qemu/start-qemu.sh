@@ -2,7 +2,7 @@
 
 set -x 
 
-qemu-system-x86_64 \
+/usr/bin/pfloader \
 	-cpu host \
 	-enable-kvm \
 	-display none \

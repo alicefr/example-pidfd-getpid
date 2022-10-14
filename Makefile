@@ -9,17 +9,17 @@ proxy: clean-proxy
 clean-connector:
 	rm -f connector
 
-clean-proxy:
-	rm -f proxy
-
 clean: clean-proxy  clean-connector
 	rm -rf *.sock
 
 image-pr-helper: connector
 	docker build -t pr-helper -f dockerfiles/pr-helper/Dockerfile .
 
-image-qemu: proxy image-disk
+image-qemu: image-pflaume image-disk
 	docker build -t qemu -f dockerfiles/qemu/Dockerfile .
+
+image-pflaume:
+	docker build -t disk dockerfiles/pflaume
 
 image-disk:
 	docker build --network host -t disk dockerfiles/create-disk
