@@ -19,7 +19,7 @@ image-qemu: image-pflaume image-disk
 	docker build -t qemu -f dockerfiles/qemu/Dockerfile .
 
 image-pflaume:
-	docker build -t disk dockerfiles/pflaume
+	docker build -t pflaume dockerfiles/pflaume
 
 image-disk:
 	docker build --network host -t disk dockerfiles/create-disk
