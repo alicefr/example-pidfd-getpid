@@ -3,7 +3,7 @@
 set -x 
 
 # TODO fix paths to find the bfp.out
-cd /usr/local/pflaume/
+cd /usr/local/bin
 ./pfloader \
 	-cpu host \
 	-enable-kvm \
