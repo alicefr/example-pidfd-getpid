@@ -7,6 +7,7 @@ docker rm -f qemu
 
 docker run -ti -d --name pr-helper \
   --pid host \
+  --network host \
   --privileged \
   pr-helper
 
